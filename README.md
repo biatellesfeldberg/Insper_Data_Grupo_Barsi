@@ -24,6 +24,51 @@ O repositório reunirá os códigos de processamento e análise dos dados, além
 
 8. **Documentar e facilitar a atualização:** organizar o processamento em Python e registrar as instruções de execução, atualização das bases e uso da solução, permitindo sua continuidade pela equipe do Grupo Barsi.
 
+## Dados brutos (`Bases_RF/`)
+
+Competência: **2026-09** ([pasta pública da RF](https://arquivos.receitafederal.gov.br/index.php/s/YggdBLfdninEJX9?dir=/2026-09)).
+
+Arquivos esperados (dados **brutos**, sem limpeza prévia):
+
+- `Estabelecimentos0.zip` … `Estabelecimentos9.zip`
+- `Empresas0.zip` … `Empresas9.zip`
+- `Cnaes.zip`, `Naturezas.zip`, `Municipios.zip`
+
+Os zips são o formato oficial de distribuição da Receita. O pipeline também aceita `.csv` / `.csv.gz` com os mesmos nomes, se você extrair localmente.
+
+> Em disco, os CSVs descompactados somam ~21 GB. Com pouco espaço livre, mantenha os `.zip` (~7,8 GB) — o `pipeline.py` lê direto deles.
+
+Para (re)baixar só as fontes:
+
+```bash
+python pipeline.py --somente-baixar
+```
+
+## Pipeline (`pipeline.py`)
+
+Um único script: limpeza completa em streaming + Left Join + dicionários → **`base_final.csv.gz`**.  
+Não gera CSV intermediário limpo e **não apaga** `Bases_RF/`.
+
+```bash
+python pipeline.py              # processa o que já está em Bases_RF/
+python pipeline.py --baixar     # baixa o que faltar e processa
+```
+
+### Fluxo
+
+1. **Dicionários** — carrega Cnaes / Naturezas / Municípios em memória (remove linhas incompletas e códigos duplicados).
+2. **Estabelecimentos (1ª passagem)** — aplica limpeza nos brutos e monta o conjunto de CNPJs válidos.
+3. **Empresas** — aplica limpeza nos brutos e indexa em memória só os CNPJs retidos.
+4. **Join (2ª passagem nos Estabelecimentos)** — Left Join por `cnpj_basico`, enriquece com descrições e grava só `base_final.csv.gz`.
+
+### Limpeza aplicada (toda sobre dados brutos)
+
+**Estabelecimentos:** situação ativa (`02`); só matriz; telefone útil (DDD BR + 8/9 dígitos, sem placeholder); `cnpj_basico` e UF preenchidos; dedup de CNPJ completo; normalização de DDD/telefone para dígitos.
+
+**Empresas:** só CNPJs presentes nos Estabelecimentos limpos; exclui naturezas públicas/partidos/etc.; razão social não vazia; dedup de `cnpj_basico`.
+
+**Dicionários:** código e descrição preenchidos; sem duplicata de código.
+
 ## Evoluções futuras
 
 - Avaliar novas fontes de leads e formas de complementar os cadastros.

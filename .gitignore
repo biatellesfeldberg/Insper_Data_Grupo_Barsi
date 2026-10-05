@@ -220,4 +220,5 @@ __marimo__/
 .streamlit/secrets.toml
 
 /Bases_RF/
+/base_final.csv.gz
 .DS_Store
