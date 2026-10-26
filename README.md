@@ -69,10 +69,51 @@ python pipeline.py --baixar     # baixa o que faltar e processa
 
 **Dicionários:** código e descrição preenchidos; sem duplicata de código.
 
-## Evoluções futuras
 
+**Plataforma SDR (app_sdr.py)**
+Interface em Python e Streamlit para os SDRs filtrarem empresas por localização,
+setor, CNAE, porte, e-mail e capital social, com busca por empresa/CNPJ e exportação
+em CSV. As atividades foram organizadas em 15 setores comerciais, com possibilidade
+de selecionar várias opções e combinar filtros.
+
+**O que foi desenvolvido**
+- Banco indexado: preparar_base_sdr.py gera o banco de empresas e os índices dos filtros.
+- Contagens prontas: preparar_contagens_sdr.py salva os totais dos cruzamentos dos filtros.
+- Consulta e exportação: a interface mostra 100 empresas por página e gera os CSVs
+  em lotes, com acompanhamento do progresso.
+Quem recebe os bancos prontos não precisa repetir a preparação. O carregamento
+e as exportações ainda dependem do volume de dados e do equipamento.
+
+
+**Como rodar**
+1. Clone o repositório e instale as dependências:
+   git clone https://github.com/biatellesfeldberg/Insper_Data_Grupo_Barsi.git
+   cd Insper_Data_Grupo_Barsi
+   python -m pip install -r requirements.txt
+2. Receba os dois arquivos do responsável e mantenha-os juntos na mesma pasta:
+   - base_sdr_pronta.sqlite3: dados das empresas e índices.
+   - contagens_sdr.sqlite3: contagens dos filtros.
+3. Na pasta do projeto, execute:
+   python app_sdr.py
+4. Abra o endereço indicado no terminal. Em Configuração da base, na lateral,
+   informe o caminho completo de base_sdr_pronta.sqlite3. As contagens são localizadas
+   automaticamente na mesma pasta. Mantenha o terminal aberto durante o uso.
+
+
+**Uso**
+Selecione os filtros, clique em Aplicar filtros e escolha as colunas desejadas.
+Filtros vazios incluem todas as opções.
+- Até 100.000 CNPJs: gera até 100 mil resultados e oferece download pelo navegador.
+- Base completa: salva todos os resultados em exportacoes_sdr, junto do banco,
+  e mostra o caminho na interface.
+Os bancos são enviados separadamente e ficam fora do Git, assim como exportações
+e temporários. base_final.csv.gz só é necessária para uma nova preparação.
+Use os dois bancos da mesma versão e preserve suas datas na transferência, pois a
+validação atual das contagens considera o tamanho e a data do banco principal.
+
+
+**Evoluções futuras**
 - Avaliar novas fontes de leads e formas de complementar os cadastros.
 - Explorar análises para apoiar campanhas de marketing e comparar o desempenho das listas e dos SDRs.
 - Avaliar integrações com a Academia Barsi e organizar a documentação do projeto no Barsi Brain.
-
 As etapas acima representam o planejamento do projeto e serão refinadas conforme a validação com o Grupo Barsi.
