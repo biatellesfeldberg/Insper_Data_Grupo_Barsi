@@ -222,3 +222,12 @@ __marimo__/
 /Bases_RF/
 /base_final.csv.gz
 .DS_Store
+
+.DS_Store
+__pycache__/
+*.sqlite3
+*.sqlite3-*
+*.partial
+base_final.csv*
+exportacoes_sdr/
+temporarios*/
